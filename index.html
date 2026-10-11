@@ -1,19 +1,633 @@
+
 <!DOCTYPE html>
-
-<html>
-
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioMed Comunidad</title>
 
-    <title>Mi Proyecto</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #f4f7ff;
+            background:
+                radial-gradient(ellipse at 85% 100%, #073b3b 0%, transparent 45%),
+                linear-gradient(120deg, #111b30, #19283c);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 16px;
+        }
+
+        .encabezado {
+            text-align: center;
+            max-width: 620px;
+            margin-bottom: 24px;
+        }
+
+        .etiqueta {
+            display: inline-block;
+            padding: 7px 13px;
+            border-radius: 20px;
+            background: #103e47;
+            color: #13d6c4;
+            font-size: 11px;
+            margin-bottom: 10px;
+        }
+
+        .encabezado h1 {
+            margin: 0 0 8px;
+            font-size: clamp(28px, 5vw, 42px);
+            letter-spacing: -1.5px;
+        }
+
+        .encabezado h1 span {
+            color: #0bd4c0;
+        }
+
+        .encabezado p {
+            margin: 0;
+            color: #aab7ca;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .contenedor {
+            width: 100%;
+            max-width: 760px;
+            background: #0e192d;
+            border: 1px solid #29364e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px #00000020;
+        }
+
+        .formulario {
+            padding: 30px;
+        }
+
+        .pestanas {
+            display: flex;
+            padding: 4px;
+            background: #070f20;
+            border: 1px solid #273249;
+            border-radius: 8px;
+            gap: 5px;
+            margin-bottom: 22px;
+        }
+
+        .pestanas button {
+            width: 50%;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 8px;
+            background: transparent;
+            color: #98a7bd;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.2s;
+        }
+
+        .pestanas button.activo {
+            color: white;
+            background: #009f90;
+        }
+
+        .pestanas button:hover {
+            color: white;
+        }
+
+        .vista {
+            display: none;
+        }
+
+        .vista.activa {
+            display: block;
+            animation: aparecer 0.25s ease;
+        }
+
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .vista h2 {
+            margin: 0 0 6px;
+            font-size: 21px;
+        }
+
+        .descripcion {
+            margin: 0 0 22px;
+            color: #91a0b7;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .campo {
+            margin-bottom: 15px;
+        }
+
+        .fila {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        label {
+            display: block;
+            color: #c4cede;
+            font-size: 12px;
+            margin-bottom: 7px;
+        }
+
+        input {
+            width: 100%;
+            height: 42px;
+            padding: 0 12px;
+            border: 1px solid #29364e;
+            border-radius: 6px;
+            outline: none;
+            background: #050d1d;
+            color: white;
+            font-size: 12px;
+        }
+
+        input::placeholder {
+            color: #687891;
+        }
+
+        input:focus {
+            border-color: #08c9b6;
+            box-shadow: 0 0 0 2px #08c9b620;
+        }
+
+        .opciones {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 5px 0 18px;
+            font-size: 11px;
+        }
+
+        .recordar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #a3b1c6;
+        }
+
+        .recordar input {
+            width: 14px;
+            height: 14px;
+            accent-color: #00cbb7;
+        }
+
+        .enlace {
+            padding: 0;
+            border: none;
+            background: none;
+            color: #05d3c0;
+            cursor: pointer;
+            font-size: 11px;
+            text-decoration: none;
+        }
+
+        .enlace:hover {
+            text-decoration: underline;
+        }
+
+        .boton-principal {
+            width: 100%;
+            min-height: 42px;
+            border: none;
+            border-radius: 6px;
+            background: #009f90;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .boton-principal:hover {
+            background: #00b9a7;
+        }
+
+        .alternativa {
+            text-align: center;
+            margin: 18px 0 0;
+            color: #8d9bb1;
+            font-size: 11px;
+        }
+
+        .mensaje {
+            display: none;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .mensaje.visible {
+            display: block;
+        }
+
+        .mensaje.error {
+            color: #ffb8b8;
+            background: #49242d;
+        }
+
+        .mensaje.info {
+            color: #a4f6e9;
+            background: #123b3b;
+        }
+
+        footer {
+            margin-top: 22px;
+            color: #8797ad;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        @media (max-width: 520px) {
+            body {
+                padding: 24px 12px;
+                justify-content: flex-start;
+            }
+
+            .encabezado {
+                margin-bottom: 20px;
+            }
+
+            .encabezado p {
+                font-size: 12px;
+            }
+
+            .formulario {
+                padding: 20px 16px;
+            }
+
+            .fila {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .pestanas button {
+                font-size: 11px;
+            }
+        }
+    </style>
 </head>
 
- <body>
+<body>
 
-<h1>Portal Académico</h1>
+    <header class="encabezado">
+        <div class="etiqueta">
+            ✦ Red Abierta de Investigación y Avances Biomédicos
+        </div>
 
- <p>Bienvenidos al portal.</p>
+        <h1>BioMed <span>Comunidad</span></h1>
 
- </body>
+        <p>
+            El espacio donde estudiantes, investigadores y profesionales
+            de la salud colaboran en proyectos de vanguardia y debaten
+            en foros especializados.
+        </p>
+    </header>
 
+    <main class="contenedor">
+        <section class="formulario">
+
+            <div class="pestanas">
+                <button
+                    type="button"
+                    id="pestanaLogin"
+                    class="activo"
+                    onclick="mostrarVista('login')">
+                    ♙ Iniciar Sesión
+                </button>
+
+                <button
+                    type="button"
+                    id="pestanaRegistro"
+                    onclick="mostrarVista('registro')">
+                    + Crear Cuenta (Registro)
+                </button>
+            </div>
+
+            <div id="mensaje" class="mensaje" role="status"
+                 aria-live="polite"></div>
+
+            <!-- FORMULARIO DE INICIO DE SESIÓN -->
+
+            <section id="login" class="vista activa">
+
+                <h2>Bienvenido/a de nuevo</h2>
+
+                <p class="descripcion">
+                    Ingresa tus credenciales para acceder a la comunidad.
+                </p>
+
+                <form id="formLogin">
+
+                    <div class="campo">
+                        <label for="correoLogin">Correo Electrónico</label>
+
+                        <input
+                            type="email"
+                            id="correoLogin"
+                            name="correo"
+                            placeholder="ejemplo@universidad.edu o tu correo"
+                            autocomplete="email"
+                            required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="contrasenaLogin">Contraseña</label>
+
+                        <input
+                            type="password"
+                            id="contrasenaLogin"
+                            name="contrasena"
+                            placeholder="Ingresa tu contraseña"
+                            autocomplete="current-password"
+                            required>
+                    </div>
+
+                    <div class="opciones">
+                        <label class="recordar">
+                            <input type="checkbox" name="recordar">
+                            Recordar sesión
+                        </label>
+
+                        <button
+                            type="button"
+                            class="enlace"
+                            onclick="recuperarContrasena()">
+                            ¿Olvidaste tu contraseña?
+                        </button>
+                    </div>
+
+                    <button type="submit" class="boton-principal">
+                        Entrar a BioMed Comunidad →
+                    </button>
+
+                </form>
+
+                <p class="alternativa">
+                    ¿Aún no tienes cuenta?
+                    <button
+                        type="button"
+                        class="enlace"
+                        onclick="mostrarVista('registro')">
+                        Regístrate gratis aquí
+                    </button>
+                </p>
+
+            </section>
+
+            <!-- FORMULARIO DE REGISTRO -->
+
+            <section id="registro" class="vista">
+
+                <h2>Únete a BioMed Comunidad</h2>
+
+                <p class="descripcion">
+                    Crea tu cuenta para compartir investigaciones,
+                    participar en proyectos y colaborar con la comunidad.
+                </p>
+
+                <form id="formRegistro">
+
+                    <div class="fila">
+
+                        <div class="campo">
+                            <label for="nombre">Nombre</label>
+
+                            <input
+                                type="text"
+                                id="nombre"
+                                name="nombre"
+                                placeholder="Tu nombre"
+                                autocomplete="given-name"
+                                maxlength="100"
+                                required>
+                        </div>
+
+                        <div class="campo">
+                            <label for="apellido">Apellido</label>
+
+                            <input
+                                type="text"
+                                id="apellido"
+                                name="apellido"
+                                placeholder="Tu apellido"
+                                autocomplete="family-name"
+                                maxlength="100"
+                                required>
+                        </div>
+
+                    </div>
+
+                    <div class="campo">
+                        <label for="correoRegistro">
+                            Correo Electrónico
+                        </label>
+
+                        <input
+                            type="email"
+                            id="correoRegistro"
+                            name="correo"
+                            placeholder="ejemplo@universidad.edu"
+                            autocomplete="email"
+                            maxlength="150"
+                            required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="usuario">Nombre de usuario</label>
+
+                        <input
+                            type="text"
+                            id="usuario"
+                            name="usuario"
+                            placeholder="Elige tu nombre de usuario"
+                            autocomplete="username"
+                            minlength="3"
+                            maxlength="50"
+                            pattern="[A-Za-z0-9_]+"
+                            title="Usa letras, números y guion bajo."
+                            required>
+                    </div>
+
+                    <div class="fila">
+
+                        <div class="campo">
+                            <label for="contrasenaRegistro">
+                                Contraseña
+                            </label>
+
+                            <input
+                                type="password"
+                                id="contrasenaRegistro"
+                                name="contrasena"
+                                placeholder="Mínimo 8 caracteres"
+                                autocomplete="new-password"
+                                minlength="8"
+                                required>
+                        </div>
+
+                        <div class="campo">
+                            <label for="confirmarContrasena">
+                                Confirmar contraseña
+                            </label>
+
+                            <input
+                                type="password"
+                                id="confirmarContrasena"
+                                name="confirmarContrasena"
+                                placeholder="Repite tu contraseña"
+                                autocomplete="new-password"
+                                minlength="8"
+                                required>
+                        </div>
+
+                    </div>
+
+                    <div class="campo">
+                        <label class="recordar">
+                            <input
+                                type="checkbox"
+                                id="aceptarTerminos"
+                                required>
+                            Acepto los términos de uso de la comunidad.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="boton-principal">
+                        Crear mi cuenta →
+                    </button>
+
+                </form>
+
+                <p class="alternativa">
+                    ¿Ya tienes una cuenta?
+
+                    <button
+                        type="button"
+                        class="enlace"
+                        onclick="mostrarVista('login')">
+                        Inicia sesión
+                    </button>
+                </p>
+
+            </section>
+
+        </section>
+    </main>
+
+    <footer>
+        BioMed Comunidad · Plataforma de colaboración biomédica
+    </footer>
+
+    <script>
+        // Cambia entre inicio de sesión y registro.
+
+        function mostrarVista(vista) {
+            document.getElementById("login").classList.remove("activa");
+            document.getElementById("registro").classList.remove("activa");
+
+            document.getElementById("pestanaLogin").classList.remove("activo");
+            document.getElementById("pestanaRegistro").classList.remove("activo");
+
+            ocultarMensaje();
+
+            if (vista === "registro") {
+                document.getElementById("registro").classList.add("activa");
+                document.getElementById("pestanaRegistro").classList.add("activo");
+            } else {
+                document.getElementById("login").classList.add("activa");
+                document.getElementById("pestanaLogin").classList.add("activo");
+            }
+        }
+
+        // Muestra mensajes en la interfaz.
+
+        function mostrarMensaje(texto, tipo) {
+            const mensaje = document.getElementById("mensaje");
+
+            mensaje.textContent = texto;
+            mensaje.className = "mensaje visible " + tipo;
+        }
+
+        function ocultarMensaje() {
+            const mensaje = document.getElementById("mensaje");
+
+            mensaje.textContent = "";
+            mensaje.className = "mensaje";
+        }
+
+        // Validación visual del formulario de inicio de sesión.
+        // Todavía no autentica contra una base de datos.
+
+        document.getElementById("formLogin").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            mostrarMensaje(
+                "El formulario está validado. Para iniciar sesión, debes conectar el sistema con el servidor y la base de datos.",
+                "info"
+            );
+        });
+
+        // Comprueba que las dos contraseñas coincidan.
+
+        document.getElementById("formRegistro").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const contrasena = document.getElementById("contrasenaRegistro").value;
+            const confirmar = document.getElementById("confirmarContrasena").value;
+
+            if (contrasena !== confirmar) {
+                mostrarMensaje(
+                    "Las contraseñas no coinciden. Verifica ambos campos.",
+                    "error"
+                );
+
+                document.getElementById("confirmarContrasena").focus();
+                return;
+            }
+
+            mostrarMensaje(
+                "Los datos del formulario son válidos. Para registrar tu cuenta, debes conectar el sistema con el servidor y la base de datos.",
+                "info"
+            );
+        });
+
+        // La recuperación de contraseña requiere un servidor.
+
+        function recuperarContrasena() {
+            mostrarMensaje(
+                "La recuperación de contraseña estará disponible cuando se configure el sistema de correo y el servidor.",
+                "info"
+            );
+        }
+    </script>
+
+</body>
 </html>
